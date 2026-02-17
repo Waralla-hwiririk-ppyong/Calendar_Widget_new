@@ -10,6 +10,7 @@
 
   <ItemGroup>
     <PackageReference Include="gong-wpf-dragdrop" Version="4.0.0" />
+    <PackageReference Include="Newtonsoft.Json" Version="13.0.4" />
   </ItemGroup>
 
 </Project>

@@ -1,20 +1,19 @@
-﻿// 프젝 엄청 꼬여서 걍 새로 만듦...
-
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.IO; // 파일 입출력
 using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
-using System.Windows.Shapes;
+using System.Windows.Shapes; // WPF 도형
 using GongSolutions.Wpf.DragDrop;
+using Newtonsoft.Json;
 
 namespace Calender_Widget
 {
-	// 일정 아이템 모델
 	public class ScheduleItem : INotifyPropertyChanged
 	{
 		private bool _isCompleted;
@@ -39,33 +38,72 @@ namespace Calender_Widget
 		private bool _isLocked = false;
 		private int _editingIndex = -1;
 
+		// 수정 포인트: System.IO.Path를 명시적으로 써서 Shapes.Path와의 충돌을 방지합니다.
+		private readonly string _filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "schedules.json");
+
 		public MainWindow()
 		{
 			InitializeComponent();
 			this.DataContext = this;
 			InitializePalette();
 
+			// 1. 저장된 데이터 불러오기
+			LoadData();
+
 			_selectedDateKey = DateTime.Now.ToString("yyyy-MM-dd");
 			UpdateCalendarDisplay();
 			ShowSchedule(DateTime.Now);
 
-			// 입력창 엔터 키 이벤트
 			ScheduleInput.KeyDown += (s, e) => { if (e.Key == Key.Enter) AddSchedule_Click(s, e); };
 
-			// 창 드래그 (잠금 상태 아닐 때만)
 			this.MouseDown += (s, e) => {
 				if (e.LeftButton == MouseButtonState.Pressed && !_isLocked && !IsDescendantOfListBox(e.OriginalSource as DependencyObject))
 					DragMove();
 			};
 		}
 
-		#region [드래그 앤 드롭 구현 - 모션 제거 버전]
+		#region [데이터 영구 저장 로직]
+		private void SaveData()
+		{
+			try
+			{
+				// 데이터 정렬 등 필요한 처리가 있다면 여기서 수행 가능
+				string json = JsonConvert.SerializeObject(_schedules, Formatting.Indented);
+				File.WriteAllText(_filePath, json);
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"저장 실패: {ex.Message}");
+			}
+		}
+
+		private void LoadData()
+		{
+			try
+			{
+				if (File.Exists(_filePath))
+				{
+					string json = File.ReadAllText(_filePath);
+					var loadedData = JsonConvert.DeserializeObject<Dictionary<string, ObservableCollection<ScheduleItem>>>(json);
+					if (loadedData != null) _schedules = loadedData;
+				}
+			}
+			catch (Exception ex)
+			{
+				System.Diagnostics.Debug.WriteLine($"로드 실패: {ex.Message}");
+				_schedules = new Dictionary<string, ObservableCollection<ScheduleItem>>();
+			}
+		}
+		#endregion
+
+		#region [드래그 앤 드롭 구현 - 잔상 제거 버전]
 		public void DragOver(IDropInfo dropInfo)
 		{
 			if (dropInfo.Data is ScheduleItem)
 			{
-				dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
 				dropInfo.Effects = DragDropEffects.Move;
+				// 기본 삽입 위치 표시선을 사용하고 싶지 않다면 아래 줄을 주석 처리하세요.
+				dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
 			}
 		}
 
@@ -77,13 +115,12 @@ namespace Calender_Widget
 				int oldIndex = dropInfo.DragInfo.SourceIndex;
 				int newIndex = dropInfo.InsertIndex;
 
-				// 삽입 위치 조정
 				if (newIndex > oldIndex) newIndex--;
 				if (oldIndex == newIndex) return;
 
-				// 데이터만 즉각적으로 이동 (애니메이션 없음)
 				sourceList.Move(oldIndex, newIndex);
 				UpdateCalendarDisplay();
+				SaveData(); // 순서 변경 후 즉시 저장
 			}
 		}
 		#endregion
@@ -110,6 +147,7 @@ namespace Calender_Widget
 
 			ScheduleInput.Clear();
 			UpdateCalendarDisplay();
+			SaveData(); // 추가 및 수정 시 저장
 			ScheduleInput.Focus();
 		}
 
@@ -137,10 +175,15 @@ namespace Calender_Widget
 				_editingIndex = -1;
 				EditNoticeText.Visibility = Visibility.Collapsed;
 				UpdateCalendarDisplay();
+				SaveData(); // 삭제 시 저장
 			}
 		}
 
-		private void Schedule_CheckChanged(object sender, RoutedEventArgs e) => UpdateCalendarDisplay();
+		private void Schedule_CheckChanged(object sender, RoutedEventArgs e)
+		{
+			UpdateCalendarDisplay();
+			SaveData(); // 완료 상태 변경 시 저장
+		}
 
 		private void ShowSchedule(DateTime date)
 		{
@@ -190,34 +233,13 @@ namespace Calender_Widget
 
 		private void ColorPickerButton_Click(object sender, RoutedEventArgs e) => ColorPalettePopup.IsOpen = !ColorPalettePopup.IsOpen;
 
-		private void UpdateCalendarDisplay()
-		{
-			if (DateText != null) DateText.Text = _displayDate.ToString("yyyy. MM");
-			GenerateCalendar(_displayDate);
-		}
+		private void UpdateCalendarDisplay() { if (DateText != null) DateText.Text = _displayDate.ToString("yyyy. MM"); GenerateCalendar(_displayDate); }
 
-		private void PrevMonth_Click(object sender, RoutedEventArgs e)
-		{
-			_displayDate = _displayDate.AddMonths(-1);
-			UpdateCalendarDisplay();
-			// 슬라이드 애니메이션 호출 제거
-		}
+		private void PrevMonth_Click(object sender, RoutedEventArgs e) { _displayDate = _displayDate.AddMonths(-1); UpdateCalendarDisplay(); }
 
-		private void NextMonth_Click(object sender, RoutedEventArgs e)
-		{
-			_displayDate = _displayDate.AddMonths(1);
-			UpdateCalendarDisplay();
-			// 슬라이드 애니메이션 호출 제거
-		}
+		private void NextMonth_Click(object sender, RoutedEventArgs e) { _displayDate = _displayDate.AddMonths(1); UpdateCalendarDisplay(); }
 
-		private void GoToToday_Click(object sender, RoutedEventArgs e)
-		{
-			_displayDate = DateTime.Now;
-			_selectedDate = DateTime.Now;
-			ShowSchedule(DateTime.Now);
-			UpdateCalendarDisplay();
-			// 슬라이드 애니메이션 호출 제거
-		}
+		private void GoToToday_Click(object sender, RoutedEventArgs e) { _displayDate = DateTime.Now; _selectedDate = DateTime.Now; ShowSchedule(DateTime.Now); UpdateCalendarDisplay(); }
 
 		private void GenerateCalendar(DateTime targetDate)
 		{
@@ -270,4 +292,3 @@ namespace Calender_Widget
 		#endregion
 	}
 }
- 
