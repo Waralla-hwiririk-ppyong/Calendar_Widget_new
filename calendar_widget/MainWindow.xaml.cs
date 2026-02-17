@@ -1,4 +1,6 @@
-﻿using System;
+﻿// 프젝 엄청 꼬여서 걍 새로 만듦...
+
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
@@ -268,3 +270,4 @@ namespace Calender_Widget
 		#endregion
 	}
 }
+ 
