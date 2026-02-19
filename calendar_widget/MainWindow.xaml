@@ -1,4 +1,6 @@
-﻿<Window x:Class="Calender_Widget.MainWindow"
+﻿<!-- 어으 드디어 끝났다 -->
+
+<Window x:Class="Calender_Widget.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:dd="urn:gong-wpf-dragdrop"
