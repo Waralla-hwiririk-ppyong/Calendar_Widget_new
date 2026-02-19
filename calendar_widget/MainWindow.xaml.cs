@@ -84,6 +84,7 @@ namespace Calender_Widget
 			DateTime firstDay = new DateTime(targetDate.Year, targetDate.Month, 1);
 			int startDay = (int)firstDay.DayOfWeek;
 
+			// 시작 요일 맞추기 위한 공백 생성
 			for (int i = 0; i < startDay; i++) CalendarGrid.Children.Add(new Border());
 
 			for (int day = 1; day <= DateTime.DaysInMonth(targetDate.Year, targetDate.Month); day++)
@@ -99,8 +100,8 @@ namespace Calender_Widget
 				};
 
 				Grid cellGrid = new Grid();
-				cellGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(32) }); // 숫자 영역
-				cellGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(18) }); // 점 영역
+				cellGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(32) });
+				cellGrid.RowDefinitions.Add(new RowDefinition { Height = new GridLength(18) });
 
 				UIElement dayContent;
 				if (date.Date == _selectedDate.Date)
@@ -125,13 +126,33 @@ namespace Calender_Widget
 				Grid.SetRow(dayContent, 0);
 				cellGrid.Children.Add(dayContent);
 
+				// --- 스케줄 인디케이터 (+n 기능 포함) ---
 				if (_schedules.ContainsKey(key) && _schedules[key].Count > 0)
 				{
-					StackPanel dots = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Top };
-					foreach (var item in _schedules[key].Take(3))
-						dots.Children.Add(new Ellipse { Width = 4, Height = 4, Fill = ConvertColor(item.Color), Margin = new Thickness(1.5) });
-					Grid.SetRow(dots, 1);
-					cellGrid.Children.Add(dots);
+					var daySchedules = _schedules[key];
+					StackPanel indicatorPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Top };
+
+					if (daySchedules.Count <= 3)
+					{
+						foreach (var item in daySchedules)
+							indicatorPanel.Children.Add(new Ellipse { Width = 4, Height = 4, Fill = ConvertColor(item.Color), Margin = new Thickness(1.5) });
+					}
+					else
+					{
+						foreach (var item in daySchedules.Take(3))
+							indicatorPanel.Children.Add(new Ellipse { Width = 4, Height = 4, Fill = ConvertColor(item.Color), Margin = new Thickness(1.5) });
+
+						indicatorPanel.Children.Add(new TextBlock
+						{
+							Text = $"+{daySchedules.Count - 3}",
+							FontSize = 9,
+							FontWeight = FontWeights.Bold,
+							Foreground = new SolidColorBrush(Color.FromRgb(120, 120, 120)),
+							Margin = new Thickness(2, -1, 0, 0)
+						});
+					}
+					Grid.SetRow(indicatorPanel, 1);
+					cellGrid.Children.Add(indicatorPanel);
 				}
 
 				btn.Content = cellGrid;
@@ -142,7 +163,8 @@ namespace Calender_Widget
 		#endregion
 
 		#region [일정 기능]
-		private void AddSchedule_Click(object sender, RoutedEventArgs e)
+		// 누락되었던 일정 추가/수정 핵심 로직 복구
+		public void AddSchedule_Click(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrWhiteSpace(ScheduleInput.Text)) return;
 
@@ -153,6 +175,7 @@ namespace Calender_Widget
 
 			if (_editingIndex != -1 && _editingIndex < targetList.Count)
 			{
+				// 수정 모드
 				targetList[_editingIndex].Content = ScheduleInput.Text;
 				targetList[_editingIndex].Color = _currentSelectedColor;
 				_editingIndex = -1;
@@ -160,6 +183,7 @@ namespace Calender_Widget
 			}
 			else
 			{
+				// 새 일정 추가
 				targetList.Add(new ScheduleItem { Content = ScheduleInput.Text, Color = _currentSelectedColor, IsCompleted = false });
 			}
 
@@ -168,7 +192,7 @@ namespace Calender_Widget
 			SaveData();
 		}
 
-		private void EditSchedule_Click(object sender, RoutedEventArgs e)
+		public void EditSchedule_Click(object sender, RoutedEventArgs e)
 		{
 			var item = (sender as Button)?.Tag as ScheduleItem;
 			if (item != null)
@@ -182,7 +206,7 @@ namespace Calender_Widget
 			}
 		}
 
-		private void DeleteSchedule_Click(object sender, RoutedEventArgs e)
+		public void DeleteSchedule_Click(object sender, RoutedEventArgs e)
 		{
 			var item = (sender as Button)?.Tag as ScheduleItem;
 			if (item != null)
@@ -203,7 +227,11 @@ namespace Calender_Widget
 			ScheduleListBox.ItemsSource = _schedules[_selectedDateKey];
 		}
 
-		private void Schedule_CheckChanged(object sender, RoutedEventArgs e) { SaveData(); UpdateCalendarDisplay(); }
+		public void Schedule_CheckChanged(object sender, RoutedEventArgs e)
+		{
+			SaveData();
+			UpdateCalendarDisplay(); // 체크박스 상태에 따라 달력 색상이 바뀔 수 있으므로 갱신
+		}
 		#endregion
 
 		#region [유틸리티]
@@ -227,7 +255,7 @@ namespace Calender_Widget
 		private void ToggleLock_Click(object sender, RoutedEventArgs e)
 		{
 			_isLocked = !_isLocked;
-			LockBtn.Content = _isLocked ? "\uE1F6" : "\uE1F7"; // MDL2 Assets 잠금 아이콘
+			LockBtn.Content = _isLocked ? "\uE1F6" : "\uE1F7";
 			LockBtn.Foreground = _isLocked ? new SolidColorBrush(Color.FromRgb(255, 85, 85)) : Brushes.Gray;
 		}
 
