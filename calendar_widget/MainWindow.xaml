@@ -106,6 +106,19 @@
 				</Setter.Value>
 			</Setter>
 		</Style>
+
+		<Style x:Key="CalendarDayButtonStyle" TargetType="Button">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="Button">
+						<Border Background="{TemplateBinding Background}">
+							<ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+						</Border>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
 	</Window.Resources>
 
 	<Border x:Name="MainBorder" CornerRadius="35" Background="#F0F2F5" Padding="30"
@@ -226,7 +239,7 @@
 						</Grid.ColumnDefinitions>
 						<Button x:Name="ColorPickerButton" Grid.Column="0" Width="40" Height="40" Click="ColorPickerButton_Click" Style="{StaticResource NeumorphicButton}">
 							<Ellipse x:Name="CurrentColorIndicator" Width="15" Height="15" Fill="#FF00C6"/>
-						</Button>
+						</Button> 
 						<Popup x:Name="ColorPalettePopup" StaysOpen="False" PlacementTarget="{Binding ElementName=ColorPickerButton}" AllowsTransparency="True" VerticalOffset="-5">
 							<Border Background="#F0F2F5" CornerRadius="15" Padding="10">
 								<Border.Effect>
@@ -238,7 +251,7 @@
 						<Border Grid.Column="1" Margin="10,0" Background="#F0F2F5" CornerRadius="12" BorderThickness="1" BorderBrush="#E2E8F0">
 							<TextBox x:Name="ScheduleInput" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center" Foreground="#444"/>
 						</Border>
-						<Button Grid.Column="2" Content="+" Width="50" Height="40" Style="{StaticResource NeumorphicButton}" FontSize="20" FontWeight="Bold" Foreground="#5555FF" Click="AddSchedule_Click"/>
+						<Button Grid.Column="2" Content="+" Width="50" Height="40" Style="{StaticResource NeumorphicButton}" FontSize="20" FontWeight="Bold" VerticalContentAlignment="Center" Foreground="#5555FF" Click="AddSchedule_Click"/>
 					</Grid>
 				</StackPanel>
 			</Grid>
