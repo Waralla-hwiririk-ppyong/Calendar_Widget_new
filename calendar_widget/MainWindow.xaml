@@ -31,6 +31,34 @@
 			</Setter>
 		</Style>
 
+		<Style x:Key="SimpleRoundCheckBox" TargetType="CheckBox">
+			<Setter Property="Background" Value="Transparent"/>
+			<Setter Property="Template">
+				<Setter.Value>
+					<ControlTemplate TargetType="CheckBox">
+						<Grid x:Name="RootGrid" Background="Transparent" Cursor="Hand">
+							<Border x:Name="Box" Width="22" Height="22" CornerRadius="11" 
+                            BorderThickness="2" BorderBrush="#D1D9E6" Background="#F0F2F5">
+								<Path x:Name="CheckMark" Data="M 5,11 L 9,15 L 17,7" 
+                              Stroke="#5555FF" StrokeThickness="2" 
+                              Visibility="Collapsed" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+							</Border>
+						</Grid>
+						<ControlTemplate.Triggers>
+							<Trigger Property="IsChecked" Value="True">
+								<Setter TargetName="Box" Property="Background" Value="#E0E5EC"/>
+								<Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+								<Setter TargetName="Box" Property="BorderBrush" Value="#5555FF"/>
+							</Trigger>
+							<Trigger Property="IsMouseOver" Value="True">
+								<Setter TargetName="Box" Property="BorderBrush" Value="#5555FF"/>
+							</Trigger>
+						</ControlTemplate.Triggers>
+					</ControlTemplate>
+				</Setter.Value>
+			</Setter>
+		</Style>
+
 		<Style x:Key="NeumorphicSlider" TargetType="Slider">
 			<Setter Property="Background" Value="Transparent"/>
 			<Setter Property="Template">
@@ -157,12 +185,35 @@
 								<Grid>
 									<Grid.ColumnDefinitions>
 										<ColumnDefinition Width="Auto"/>
+										<ColumnDefinition Width="Auto"/>
 										<ColumnDefinition Width="*"/>
 										<ColumnDefinition Width="Auto"/>
 									</Grid.ColumnDefinitions>
-									<Border Grid.Column="0" Width="4" CornerRadius="2" Background="{Binding Color}" Margin="0,2,15,2"/>
-									<TextBlock Grid.Column="1" Text="{Binding Content}" FontSize="14" VerticalAlignment="Center" Foreground="#44474A"/>
-									<StackPanel Grid.Column="2" Orientation="Horizontal">
+
+									<Border Grid.Column="0" Width="4" CornerRadius="2" Background="{Binding Color}" Margin="0,2,10,2"/>
+
+									<CheckBox Grid.Column="1" 
+											  Style="{StaticResource SimpleRoundCheckBox}"
+											  IsChecked="{Binding IsCompleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
+											  VerticalAlignment="Center" 
+											  Margin="0,0,12,0"
+											  Click="Schedule_CheckChanged"/>
+
+									<TextBlock Grid.Column="2" Text="{Binding Content}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap">
+										<TextBlock.Style>
+											<Style TargetType="TextBlock">
+												<Setter Property="Foreground" Value="#44474A"/>
+												<Style.Triggers>
+													<DataTrigger Binding="{Binding IsCompleted}" Value="True">
+														<Setter Property="TextDecorations" Value="Strikethrough"/>
+														<Setter Property="Opacity" Value="0.5"/>
+													</DataTrigger>
+												</Style.Triggers>
+											</Style>
+										</TextBlock.Style>
+									</TextBlock>
+
+									<StackPanel Grid.Column="3" Orientation="Horizontal">
 										<Button Content="" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" BorderThickness="0" Width="28" Height="28" Tag="{Binding}" Click="EditSchedule_Click"/>
 										<Button Content="" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" BorderThickness="0" Width="28" Height="28" Tag="{Binding}" Click="DeleteSchedule_Click"/>
 									</StackPanel>
@@ -177,7 +228,7 @@
 						<ColumnDefinition Width="Auto"/>
 						<ColumnDefinition Width="*"/>
 					</Grid.ColumnDefinitions>
-					<Button x:Name="LockBtn" Grid.Column="0" Content="" FontFamily="Segoe MDL2 Assets" Style="{StaticResource NeumorphicButton}" Width="32" Height="32" Click="ToggleLock_Click"/>
+					<Button x:Name="LockBtn" Grid.Column="0" Content="" FontFamily="Segoe MDL2 Assets" Style="{StaticResource NeumorphicButton}" Width="32" Height="32" Click="ToggleLock_Click"/>
 					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
 						<TextBlock Text="Opacity" Foreground="#A0A8B5" FontSize="11" Margin="0,0,12,0"/>
 						<Slider x:Name="OpacitySlider" Width="120" Minimum="0.3" Maximum="1.0" Value="1.0" Style="{StaticResource NeumorphicSlider}"/>

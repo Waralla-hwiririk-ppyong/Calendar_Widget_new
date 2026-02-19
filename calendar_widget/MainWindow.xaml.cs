@@ -163,7 +163,6 @@ namespace Calender_Widget
 		#endregion
 
 		#region [일정 기능]
-		// 누락되었던 일정 추가/수정 핵심 로직 복구
 		public void AddSchedule_Click(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrWhiteSpace(ScheduleInput.Text)) return;
@@ -227,10 +226,14 @@ namespace Calender_Widget
 			ScheduleListBox.ItemsSource = _schedules[_selectedDateKey];
 		}
 
+		// 중복 정의되었던 부분을 하나로 통합했습니다.
 		public void Schedule_CheckChanged(object sender, RoutedEventArgs e)
 		{
-			SaveData();
-			UpdateCalendarDisplay(); // 체크박스 상태에 따라 달력 색상이 바뀔 수 있으므로 갱신
+			if (this.IsLoaded)
+			{
+				SaveData();
+				UpdateCalendarDisplay();
+			}
 		}
 		#endregion
 
@@ -272,7 +275,7 @@ namespace Calender_Widget
 		private void GoToToday_Click(object sender, RoutedEventArgs e) { _displayDate = DateTime.Now; _selectedDate = DateTime.Now; ShowSchedule(DateTime.Now); UpdateCalendarDisplay(); }
 		private void ColorPickerButton_Click(object sender, RoutedEventArgs e) => ColorPalettePopup.IsOpen = !ColorPalettePopup.IsOpen;
 
-		// 드래그 앤 드롭 구현
+		// IDropTarget 인터페이스 구현
 		public void DragOver(IDropInfo dropInfo) { dropInfo.Effects = DragDropEffects.Move; dropInfo.DropTargetAdorner = DropTargetAdorners.Insert; }
 		public void Drop(IDropInfo dropInfo)
 		{
