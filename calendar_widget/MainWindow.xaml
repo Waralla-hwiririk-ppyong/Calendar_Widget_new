@@ -237,7 +237,7 @@
 				</Grid>
 
 				<StackPanel Grid.Row="3">
-					<TextBlock x:Name="EditNoticeText" Text="수정 모드" FontSize="11" Foreground= "#5555FF" FontWeight="Bold" Margin="60,0,0,10" Visibility="Collapsed"/>
+					<TextBlock x:Name="EditNoticeText" Text="수정 모드" FontSize="11" Foreground= "#5555FF" FontWeight="Bold" Margin="60,0,0,10" Visibility="Collapsed"  />
 					<Grid Height="50">
 						<Grid.ColumnDefinitions>
 							<ColumnDefinition Width="Auto"/>
@@ -255,7 +255,7 @@
 						<Border Grid.Column="1" Margin="10,0" Background="#F0F2F5" CornerRadius="12" BorderThickness="1" BorderBrush="#E2E8F0">
 							<TextBox x:Name="ScheduleInput" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center"/>
 						</Border>
-						<Button Grid.Column="2" Content="+" Width="50" Height="40" Style="{StaticResource NeumorphicButton}" FontSize="20" Click="AddSchedule_Click"/>
+						<Button Grid.Column="2" Content="+" Foreground="#5555ff"  Width="50" Height="40" Style="{StaticResource NeumorphicButton}" FontSize="20" Click="AddSchedule_Click" Margin="0, 0, 0, 0"/>
 					</Grid>
 				</StackPanel>
 			</Grid>
