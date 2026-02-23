@@ -201,7 +201,7 @@
 
 									<TextBlock Grid.Column="2" Text="{Binding Content}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap">
 										<TextBlock.Style>
-											<Style TargetType="TextBlock">
+											<Style TargetType="TextBlock"> 
 												<Setter Property="Foreground" Value="#44474A"/>
 												<Style.Triggers>
 													<DataTrigger Binding="{Binding IsCompleted}" Value="True">
@@ -255,7 +255,7 @@
 						<Border Grid.Column="1" Margin="10,0" Background="#F0F2F5" CornerRadius="12" BorderThickness="1" BorderBrush="#E2E8F0">
 							<TextBox x:Name="ScheduleInput" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center"/>
 						</Border>
-						<Button Grid.Column="2" Content="+" Foreground="#5555ff"  Width="50" Height="40" Style="{StaticResource NeumorphicButton}" FontSize="20" Click="AddSchedule_Click" Margin="0, 0, 0, 0"/>
+						<Button Grid.Column="2" Content="+" Foreground="#5555ff" Width="50" Height="40" Style="{StaticResource NeumorphicButton}" FontSize="20" Click="AddSchedule_Click" Margin="0, 0, 0, 0"/>
 					</Grid>
 				</StackPanel>
 			</Grid>
