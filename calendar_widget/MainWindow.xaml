@@ -5,6 +5,7 @@
         Title="Calendar" Height="750" Width="430"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterScreen"
+		ShowInTaskbar="False"
         FontFamily="Segoe UI, Malgun Gothic">
 
 	<Window.Resources>

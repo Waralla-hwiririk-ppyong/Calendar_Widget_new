@@ -1,14 +1,11 @@
-﻿using System.Configuration;
-using System.Data;
-using System.Windows;
+﻿using System.Windows;
 
-namespace calendar_widget
+namespace Calender_Widget
 {
 	/// <summary>
 	/// Interaction logic for App.xaml
 	/// </summary>
-	public partial class App : Application
+	public partial class App : System.Windows.Application // 명시적으로 WPF Application 지정
 	{
 	}
-
 }

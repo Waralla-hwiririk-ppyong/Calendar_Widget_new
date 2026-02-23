@@ -5,16 +5,16 @@ using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
+using System.Windows.Controls;
+using System.Windows.Input;
 using GongSolutions.Wpf.DragDrop;
 using Newtonsoft.Json;
 
 namespace Calender_Widget
 {
-	public partial class MainWindow : Window, IDropTarget
+	public partial class MainWindow : Window, GongSolutions.Wpf.DragDrop.IDropTarget
 	{
 		private Dictionary<string, ObservableCollection<ScheduleItem>> _schedules = new Dictionary<string, ObservableCollection<ScheduleItem>>();
 		private string _selectedDateKey = "";
@@ -23,9 +23,10 @@ namespace Calender_Widget
 		private string _currentSelectedColor = "#FF00C6";
 		private bool _isLocked = false;
 		private int _editingIndex = -1;
-
-		// Path 충돌 방지를 위해 System.IO.Path 명시
 		private readonly string _filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "schedules.json");
+
+		// WinForms용 NotifyIcon은 전체 이름을 다 적어줍니다.
+		private System.Windows.Forms.NotifyIcon _notifyIcon;
 
 		public MainWindow()
 		{
@@ -33,26 +34,42 @@ namespace Calender_Widget
 			this.DataContext = this;
 			InitializePalette();
 			LoadData();
+			SetupTrayIcon();
 
 			_selectedDateKey = DateTime.Now.ToString("yyyy-MM-dd");
 			UpdateCalendarDisplay();
 			ShowSchedule(DateTime.Now);
 
-			// 엔터키 입력 처리
 			ScheduleInput.KeyDown += (s, e) => { if (e.Key == Key.Enter) AddSchedule_Click(s, e); };
 
-			// 윈도우 드래그 (잠금 상태 아닐 때만)
 			this.MouseDown += (s, e) => {
 				if (e.LeftButton == MouseButtonState.Pressed && !_isLocked && !IsDescendantOfListBox(e.OriginalSource as DependencyObject))
 					DragMove();
 			};
 		}
 
-		#region [데이터 관리]
+		private void SetupTrayIcon()
+		{
+			_notifyIcon = new System.Windows.Forms.NotifyIcon();
+			try { _notifyIcon.Icon = new System.Drawing.Icon("icon_nb.ico"); }
+			catch { _notifyIcon.Icon = System.Drawing.SystemIcons.Application; }
+
+			_notifyIcon.Visible = true;
+			_notifyIcon.Text = "Calendar Widget";
+
+			System.Windows.Forms.ContextMenuStrip menu = new System.Windows.Forms.ContextMenuStrip();
+			menu.Items.Add("열기", null, (s, e) => { this.Show(); this.WindowState = WindowState.Normal; });
+			menu.Items.Add("종료", null, (s, e) => System.Windows.Application.Current.Shutdown());
+			_notifyIcon.ContextMenuStrip = menu;
+
+			_notifyIcon.DoubleClick += (s, e) => { this.Show(); this.Activate(); };
+		}
+
+		#region [데이터 및 달력 로직]
 		private void SaveData()
 		{
 			try { File.WriteAllText(_filePath, JsonConvert.SerializeObject(_schedules, Formatting.Indented)); }
-			catch (Exception ex) { System.Diagnostics.Debug.WriteLine($"저장 실패: {ex.Message}"); }
+			catch { }
 		}
 
 		private void LoadData()
@@ -65,11 +82,9 @@ namespace Calender_Widget
 					if (data != null) _schedules = data;
 				}
 			}
-			catch { _schedules = new Dictionary<string, ObservableCollection<ScheduleItem>>(); }
+			catch { }
 		}
-		#endregion
 
-		#region [달력 생성]
 		private void UpdateCalendarDisplay()
 		{
 			if (DateText != null) DateText.Text = _displayDate.ToString("yyyy. MM");
@@ -80,11 +95,9 @@ namespace Calender_Widget
 		{
 			if (CalendarGrid == null) return;
 			CalendarGrid.Children.Clear();
-
 			DateTime firstDay = new DateTime(targetDate.Year, targetDate.Month, 1);
 			int startDay = (int)firstDay.DayOfWeek;
 
-			// 시작 요일 맞추기 위한 공백 생성
 			for (int i = 0; i < startDay; i++) CalendarGrid.Children.Add(new Border());
 
 			for (int day = 1; day <= DateTime.DaysInMonth(targetDate.Year, targetDate.Month); day++)
@@ -92,11 +105,11 @@ namespace Calender_Widget
 				DateTime date = new DateTime(targetDate.Year, targetDate.Month, day);
 				string key = date.ToString("yyyy-MM-dd");
 
-				Button btn = new Button
+				System.Windows.Controls.Button btn = new System.Windows.Controls.Button
 				{
 					Style = (Style)this.Resources["CalendarDayButtonStyle"],
 					Height = 55,
-					Cursor = Cursors.Hand
+					Cursor = System.Windows.Input.Cursors.Hand
 				};
 
 				Grid cellGrid = new Grid();
@@ -107,8 +120,10 @@ namespace Calender_Widget
 				if (date.Date == _selectedDate.Date)
 				{
 					Grid g = new Grid { VerticalAlignment = VerticalAlignment.Center };
-					g.Children.Add(new Ellipse { Fill = new SolidColorBrush(Color.FromRgb(85, 85, 255)), Width = 28, Height = 28 });
-					g.Children.Add(new TextBlock { Text = day.ToString(), Foreground = Brushes.White, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, FontSize = 12, FontWeight = FontWeights.Bold });
+					// Color 명시적 수정
+					g.Children.Add(new Ellipse { Fill = new SolidColorBrush(System.Windows.Media.Color.FromRgb(85, 85, 255)), Width = 28, Height = 28 });
+					// Brushes 명시적 수정
+					g.Children.Add(new TextBlock { Text = day.ToString(), Foreground = System.Windows.Media.Brushes.White, HorizontalAlignment = System.Windows.HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Center, FontSize = 12, FontWeight = FontWeights.Bold });
 					dayContent = g;
 				}
 				else
@@ -116,9 +131,10 @@ namespace Calender_Widget
 					dayContent = new TextBlock
 					{
 						Text = day.ToString(),
-						HorizontalAlignment = HorizontalAlignment.Center,
+						HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
 						VerticalAlignment = VerticalAlignment.Center,
-						Foreground = (date.Date == DateTime.Now.Date) ? new SolidColorBrush(Color.FromRgb(85, 85, 255)) : (Brush)new BrushConverter().ConvertFromString("#44474A"),
+						// Color 및 Brush 명시적 수정
+						Foreground = (date.Date == DateTime.Now.Date) ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(85, 85, 255)) : (System.Windows.Media.Brush)new BrushConverter().ConvertFromString("#44474A"),
 						FontSize = 12,
 						FontWeight = (date.Date == DateTime.Now.Date) ? FontWeights.Bold : FontWeights.Normal
 					};
@@ -126,11 +142,15 @@ namespace Calender_Widget
 				Grid.SetRow(dayContent, 0);
 				cellGrid.Children.Add(dayContent);
 
-				// --- 스케줄 인디케이터 (+n 기능 포함) ---
 				if (_schedules.ContainsKey(key) && _schedules[key].Count > 0)
 				{
 					var daySchedules = _schedules[key];
-					StackPanel indicatorPanel = new StackPanel { Orientation = Orientation.Horizontal, HorizontalAlignment = HorizontalAlignment.Center, VerticalAlignment = VerticalAlignment.Top };
+					StackPanel indicatorPanel = new StackPanel
+					{
+						Orientation = System.Windows.Controls.Orientation.Horizontal,
+						HorizontalAlignment = System.Windows.HorizontalAlignment.Center,
+						VerticalAlignment = VerticalAlignment.Top
+					};
 
 					if (daySchedules.Count <= 3)
 					{
@@ -147,7 +167,8 @@ namespace Calender_Widget
 							Text = $"+{daySchedules.Count - 3}",
 							FontSize = 9,
 							FontWeight = FontWeights.Bold,
-							Foreground = new SolidColorBrush(Color.FromRgb(120, 120, 120)),
+							// Color 명시적 수정
+							Foreground = new SolidColorBrush(System.Windows.Media.Color.FromRgb(120, 120, 120)),
 							Margin = new Thickness(2, -1, 0, 0)
 						});
 					}
@@ -156,7 +177,7 @@ namespace Calender_Widget
 				}
 
 				btn.Content = cellGrid;
-				btn.Click += (s, e2) => { _selectedDate = date; ShowSchedule(date); UpdateCalendarDisplay(); };
+				btn.Click += (s, e) => { _selectedDate = date; ShowSchedule(date); UpdateCalendarDisplay(); };
 				CalendarGrid.Children.Add(btn);
 			}
 		}
@@ -166,15 +187,11 @@ namespace Calender_Widget
 		public void AddSchedule_Click(object sender, RoutedEventArgs e)
 		{
 			if (string.IsNullOrWhiteSpace(ScheduleInput.Text)) return;
-
-			if (!_schedules.ContainsKey(_selectedDateKey))
-				_schedules[_selectedDateKey] = new ObservableCollection<ScheduleItem>();
-
+			if (!_schedules.ContainsKey(_selectedDateKey)) _schedules[_selectedDateKey] = new ObservableCollection<ScheduleItem>();
 			var targetList = _schedules[_selectedDateKey];
 
 			if (_editingIndex != -1 && _editingIndex < targetList.Count)
 			{
-				// 수정 모드
 				targetList[_editingIndex].Content = ScheduleInput.Text;
 				targetList[_editingIndex].Color = _currentSelectedColor;
 				_editingIndex = -1;
@@ -182,10 +199,8 @@ namespace Calender_Widget
 			}
 			else
 			{
-				// 새 일정 추가
 				targetList.Add(new ScheduleItem { Content = ScheduleInput.Text, Color = _currentSelectedColor, IsCompleted = false });
 			}
-
 			ScheduleInput.Clear();
 			UpdateCalendarDisplay();
 			SaveData();
@@ -193,7 +208,7 @@ namespace Calender_Widget
 
 		public void EditSchedule_Click(object sender, RoutedEventArgs e)
 		{
-			var item = (sender as Button)?.Tag as ScheduleItem;
+			var item = (sender as System.Windows.Controls.Button)?.Tag as ScheduleItem;
 			if (item != null)
 			{
 				_editingIndex = _schedules[_selectedDateKey].IndexOf(item);
@@ -207,7 +222,7 @@ namespace Calender_Widget
 
 		public void DeleteSchedule_Click(object sender, RoutedEventArgs e)
 		{
-			var item = (sender as Button)?.Tag as ScheduleItem;
+			var item = (sender as System.Windows.Controls.Button)?.Tag as ScheduleItem;
 			if (item != null)
 			{
 				_schedules[_selectedDateKey].Remove(item);
@@ -226,14 +241,9 @@ namespace Calender_Widget
 			ScheduleListBox.ItemsSource = _schedules[_selectedDateKey];
 		}
 
-		// 중복 정의되었던 부분을 하나로 통합했습니다.
 		public void Schedule_CheckChanged(object sender, RoutedEventArgs e)
 		{
-			if (this.IsLoaded)
-			{
-				SaveData();
-				UpdateCalendarDisplay();
-			}
+			if (this.IsLoaded) { SaveData(); UpdateCalendarDisplay(); }
 		}
 		#endregion
 
@@ -244,7 +254,13 @@ namespace Calender_Widget
 			PaletteGrid.Children.Clear();
 			foreach (var colorCode in colors)
 			{
-				Button btn = new Button { Width = 28, Height = 28, Margin = new Thickness(5), Cursor = Cursors.Hand };
+				System.Windows.Controls.Button btn = new System.Windows.Controls.Button
+				{
+					Width = 28,
+					Height = 28,
+					Margin = new Thickness(5),
+					Cursor = System.Windows.Input.Cursors.Hand
+				};
 				btn.Template = (ControlTemplate)System.Windows.Markup.XamlReader.Parse($@"<ControlTemplate xmlns='http://schemas.microsoft.com/winfx/2006/xaml/presentation' TargetType='Button'><Ellipse Fill='{colorCode}' Stroke='White' StrokeThickness='2'/></ControlTemplate>");
 				btn.Click += (s, e) => {
 					_currentSelectedColor = colorCode;
@@ -259,14 +275,20 @@ namespace Calender_Widget
 		{
 			_isLocked = !_isLocked;
 			LockBtn.Content = _isLocked ? "\uE1F6" : "\uE1F7";
-			LockBtn.Foreground = _isLocked ? new SolidColorBrush(Color.FromRgb(255, 85, 85)) : Brushes.Gray;
+			// Color 및 Brushes 명시적 수정
+			LockBtn.Foreground = _isLocked ? new SolidColorBrush(System.Windows.Media.Color.FromRgb(255, 85, 85)) : System.Windows.Media.Brushes.Gray;
 		}
 
-		private Brush ConvertColor(string hex) => (SolidColorBrush)new BrushConverter().ConvertFromString(hex) ?? Brushes.Gray;
+		// Brush 타입 명시적 수정
+		private System.Windows.Media.Brush ConvertColor(string hex) => (SolidColorBrush)new BrushConverter().ConvertFromString(hex) ?? System.Windows.Media.Brushes.Gray;
 
 		private bool IsDescendantOfListBox(DependencyObject element)
 		{
-			while (element != null) { if (element is ListBox) return true; element = VisualTreeHelper.GetParent(element); }
+			while (element != null)
+			{
+				if (element is System.Windows.Controls.ListBox) return true;
+				element = VisualTreeHelper.GetParent(element);
+			}
 			return false;
 		}
 
@@ -275,9 +297,12 @@ namespace Calender_Widget
 		private void GoToToday_Click(object sender, RoutedEventArgs e) { _displayDate = DateTime.Now; _selectedDate = DateTime.Now; ShowSchedule(DateTime.Now); UpdateCalendarDisplay(); }
 		private void ColorPickerButton_Click(object sender, RoutedEventArgs e) => ColorPalettePopup.IsOpen = !ColorPalettePopup.IsOpen;
 
-		// IDropTarget 인터페이스 구현
-		public void DragOver(IDropInfo dropInfo) { dropInfo.Effects = DragDropEffects.Move; dropInfo.DropTargetAdorner = DropTargetAdorners.Insert; }
-		public void Drop(IDropInfo dropInfo)
+		public void DragOver(GongSolutions.Wpf.DragDrop.IDropInfo dropInfo)
+		{
+			dropInfo.Effects = System.Windows.DragDropEffects.Move;
+			dropInfo.DropTargetAdorner = DropTargetAdorners.Insert;
+		}
+		public void Drop(GongSolutions.Wpf.DragDrop.IDropInfo dropInfo)
 		{
 			var list = dropInfo.DragInfo.SourceCollection as ObservableCollection<ScheduleItem>;
 			if (list != null)
@@ -297,11 +322,9 @@ namespace Calender_Widget
 		private bool _isCompleted;
 		private string _content;
 		private string _color;
-
 		public string Content { get => _content; set { _content = value; OnPropertyChanged(nameof(Content)); } }
 		public string Color { get => _color; set { _color = value; OnPropertyChanged(nameof(Color)); } }
 		public bool IsCompleted { get => _isCompleted; set { _isCompleted = value; OnPropertyChanged(nameof(IsCompleted)); } }
-
 		public event PropertyChangedEventHandler PropertyChanged;
 		protected void OnPropertyChanged(string name) => PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(name));
 	}
