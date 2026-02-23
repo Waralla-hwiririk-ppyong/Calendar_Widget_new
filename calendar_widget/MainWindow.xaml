@@ -5,261 +5,298 @@
         Title="Calendar" Height="750" Width="430"
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterScreen"
-		ShowInTaskbar="False"
+        ShowInTaskbar="False"
         FontFamily="Segoe UI, Malgun Gothic">
 
-	<Window.Resources>
-		<Style x:Key="NeumorphicButton" TargetType="Button">
-			<Setter Property="Background" Value="#F0F2F5"/>
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="Button">
-						<Grid>
-							<Border CornerRadius="12" Background="#F0F2F5">
-								<Border.Effect>
-									<DropShadowEffect BlurRadius="8" Direction="315" ShadowDepth="4" Opacity="0.5" Color="#D1D9E6"/>
-								</Border.Effect>
-							</Border>
-							<Border CornerRadius="12" Background="#F0F2F5" Margin="-1">
-								<Border.Effect>
-									<DropShadowEffect BlurRadius="8" Direction="135" ShadowDepth="4" Opacity="1" Color="#FFFFFF"/>
-								</Border.Effect>
-								<ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
-							</Border>
-						</Grid>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
+    <Window.Resources>
+        <Style x:Key="NeumorphicButton" TargetType="Button">
+            <Setter Property="Background" Value="#F0F2F5"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Grid>
+                            <Border CornerRadius="12" Background="#F0F2F5">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="8" Direction="315" ShadowDepth="4" Opacity="0.5" Color="#D1D9E6"/>
+                                </Border.Effect>
+                            </Border>
+                            <Border CornerRadius="12" Background="#F0F2F5" Margin="-1">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="8" Direction="135" ShadowDepth="4" Opacity="1" Color="#FFFFFF"/>
+                                </Border.Effect>
+                                <ContentPresenter HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                            </Border>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-		<Style x:Key="SimpleRoundCheckBox" TargetType="CheckBox">
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="CheckBox">
-						<Grid x:Name="RootGrid" Background="Transparent" Cursor="Hand">
-							<Border x:Name="Box" Width="22" Height="22" CornerRadius="11" 
-                            BorderThickness="2" BorderBrush="#D1D9E6" Background="#F0F2F5">
-								<Path x:Name="CheckMark" Data="M 5,11 L 9,15 L 17,7" 
-                              Stroke="#5555FF" StrokeThickness="2" 
-                              Visibility="Collapsed" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
-							</Border>
-						</Grid>
-						<ControlTemplate.Triggers>
-							<Trigger Property="IsChecked" Value="True">
-								<Setter TargetName="Box" Property="Background" Value="#E0E5EC"/>
-								<Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
-								<Setter TargetName="Box" Property="BorderBrush" Value="#5555FF"/>
-							</Trigger>
-							<Trigger Property="IsMouseOver" Value="True">
-								<Setter TargetName="Box" Property="BorderBrush" Value="#5555FF"/>
-							</Trigger>
-						</ControlTemplate.Triggers>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
+        <Style x:Key="SimpleRoundCheckBox" TargetType="CheckBox">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="CheckBox">
+                        <Grid x:Name="RootGrid" Background="Transparent" Cursor="Hand">
+                            <Border x:Name="Box" Width="22" Height="22" CornerRadius="11"
+                                    BorderThickness="2" BorderBrush="#D1D9E6" Background="#F0F2F5">
+                                <Path x:Name="CheckMark" Data="M 5,11 L 9,15 L 17,7"
+                                      Stroke="#5555FF" StrokeThickness="2"
+                                      Visibility="Collapsed" StrokeStartLineCap="Round" StrokeEndLineCap="Round"/>
+                            </Border>
+                        </Grid>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsChecked" Value="True">
+                                <Setter TargetName="Box" Property="Background" Value="#E0E5EC"/>
+                                <Setter TargetName="CheckMark" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#5555FF"/>
+                            </Trigger>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="Box" Property="BorderBrush" Value="#5555FF"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-		<Style x:Key="NeumorphicSlider" TargetType="Slider">
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="Slider">
-						<Grid>
-							<Border x:Name="TrackBackground" Height="8" CornerRadius="4" Background="#E0E5EC" VerticalAlignment="Center">
-								<Border.Effect>
-									<DropShadowEffect BlurRadius="3" Direction="135" ShadowDepth="1" Opacity="0.8" Color="#FFFFFF"/>
-								</Border.Effect>
-							</Border>
-							<Track x:Name="PART_Track">
-								<Track.Thumb>
-									<Thumb>
-										<Thumb.Template>
-											<ControlTemplate TargetType="Thumb">
-												<Grid Width="22" Height="22">
-													<Ellipse Fill="#F0F2F5">
-														<Ellipse.Effect>
-															<DropShadowEffect BlurRadius="6" Direction="315" ShadowDepth="3" Opacity="0.5" Color="#D1D9E6"/>
-														</Ellipse.Effect>
-													</Ellipse>
-													<Ellipse Width="8" Height="8" Fill="#5555FF"/>
-												</Grid>
-											</ControlTemplate>
-										</Thumb.Template>
-									</Thumb>
-								</Track.Thumb>
-							</Track>
-						</Grid>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
+        <Style x:Key="NeumorphicSlider" TargetType="Slider">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Slider">
+                        <Grid>
+                            <Border x:Name="TrackBackground" Height="8" CornerRadius="4" Background="#E0E5EC" VerticalAlignment="Center">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="3" Direction="135" ShadowDepth="1" Opacity="0.8" Color="#FFFFFF"/>
+                                </Border.Effect>
+                            </Border>
+                            <Track x:Name="PART_Track">
+                                <Track.Thumb>
+                                    <Thumb>
+                                        <Thumb.Template>
+                                            <ControlTemplate TargetType="Thumb">
+                                                <Grid Width="22" Height="22">
+                                                    <Ellipse Fill="#F0F2F5">
+                                                        <Ellipse.Effect>
+                                                            <DropShadowEffect BlurRadius="6" Direction="315" ShadowDepth="3" Opacity="0.5" Color="#D1D9E6"/>
+                                                        </Ellipse.Effect>
+                                                    </Ellipse>
+                                                    <Ellipse Width="8" Height="8" Fill="#5555FF"/>
+                                                </Grid>
+                                            </ControlTemplate>
+                                        </Thumb.Template>
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-		<Style TargetType="ListBoxItem">
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="HorizontalContentAlignment" Value="Stretch"/>
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="ListBoxItem">
-						<Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True" Margin="0,2">
-							<ContentPresenter />
-						</Border>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
+        <Style TargetType="ListBoxItem">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBoxItem">
+                        <Border Background="{TemplateBinding Background}" SnapsToDevicePixels="True" Margin="0,2">
+                            <ContentPresenter />
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
 
-		<Style x:Key="CalendarDayButtonStyle" TargetType="Button">
-			<Setter Property="Background" Value="Transparent"/>
-			<Setter Property="Template">
-				<Setter.Value>
-					<ControlTemplate TargetType="Button">
-						<Border Background="{TemplateBinding Background}">
-							<ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
-						</Border>
-					</ControlTemplate>
-				</Setter.Value>
-			</Setter>
-		</Style>
-	</Window.Resources>
+        <Style x:Key="CalendarDayButtonStyle" TargetType="Button">
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border Background="{TemplateBinding Background}">
+                            <ContentPresenter HorizontalAlignment="Stretch" VerticalAlignment="Stretch"/>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
 
-	<Border x:Name="MainBorder" CornerRadius="35" Background="#F0F2F5" Padding="30"
+    <Border x:Name="MainBorder" CornerRadius="35" Background="#F0F2F5" Padding="30"
             Opacity="{Binding ElementName=OpacitySlider, Path=Value}">
-		<Border.Effect>
-			<DropShadowEffect BlurRadius="25" Direction="270" ShadowDepth="5" Opacity="0.2" Color="#707070"/>
-		</Border.Effect>
+        <Border.Effect>
+            <DropShadowEffect BlurRadius="25" Direction="270" ShadowDepth="5" Opacity="0.2" Color="#707070"/>
+        </Border.Effect>
 
-		<Grid>
-			<Grid.RowDefinitions>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="Auto"/>
-				<RowDefinition Height="*"/>
-			</Grid.RowDefinitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
 
-			<Grid Grid.Row="0" Margin="0,0,0,25">
-				<Grid.ColumnDefinitions>
-					<ColumnDefinition Width="Auto"/>
-					<ColumnDefinition Width="*"/>
-					<ColumnDefinition Width="Auto"/>
-				</Grid.ColumnDefinitions>
-				<StackPanel Orientation="Horizontal" Grid.Column="0">
-					<Button Content="" FontFamily="Segoe MDL2 Assets" Style="{StaticResource NeumorphicButton}" Width="35" Height="35" Click="PrevMonth_Click" Margin="0,0,8,0"/>
-					<Button Content="" FontFamily="Segoe MDL2 Assets" Style="{StaticResource NeumorphicButton}" Width="35" Height="35" Click="NextMonth_Click"/>
-				</StackPanel>
-				<TextBlock x:Name="DateText" Grid.Column="1" Text="2026. 02" FontSize="24" FontWeight="ExtraBold" Foreground="#44474A" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-				<Button Grid.Column="2" Content="Today" Style="{StaticResource NeumorphicButton}" Width="65" Height="35" Click="GoToToday_Click"/>
-			</Grid>
+            <!-- ✅ 헤더: 한 번만 유지 -->
+            <Grid Grid.Row="0" Margin="0,0,0,25">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto"/>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
 
-			<UniformGrid Grid.Row="1" Columns="7" Margin="0,0,0,15">
-				<TextBlock Text="일" HorizontalAlignment="Center" Foreground="#FF5555" FontSize="12" FontWeight="Bold"/>
-				<TextBlock Text="월" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
-				<TextBlock Text="화" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
-				<TextBlock Text="수" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
-				<TextBlock Text="목" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
-				<TextBlock Text="금" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
-				<TextBlock Text="토" HorizontalAlignment="Center" Foreground="#5555FF" FontSize="12" FontWeight="Bold"/>
-			</UniformGrid>
+                <Button Grid.Row="0" Grid.Column="2" Content="&#xE106;" FontFamily="Segoe MDL2 Assets"
+                        Style="{StaticResource NeumorphicButton}" Width="25" Height="25"
+                        Click="CloseWindow_Click" Margin="0,-15,-15,10"
+                        Foreground="#FF5555" FontSize="10" HorizontalAlignment="Right"/>
 
-			<Grid Grid.Row="2" Margin="0,10">
-				<UniformGrid x:Name="CalendarGrid" Columns="7" VerticalAlignment="Top"/>
-			</Grid>
+                <StackPanel Orientation="Horizontal" Grid.Row="1" Grid.Column="0">
+                    <Button Content="" FontFamily="Segoe MDL2 Assets" Style="{StaticResource NeumorphicButton}"
+                            Width="35" Height="35" Click="PrevMonth_Click" Margin="0,0,8,0"/>
+                    <Button Content="" FontFamily="Segoe MDL2 Assets" Style="{StaticResource NeumorphicButton}"
+                            Width="35" Height="35" Click="NextMonth_Click"/>
+                </StackPanel>
 
-			<Grid Grid.Row="3" Margin="0,20,0,0">
-				<Grid.RowDefinitions>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition Height="*"/>
-					<RowDefinition Height="Auto"/>
-					<RowDefinition Height="Auto"/>
-				</Grid.RowDefinitions>
+                <TextBlock x:Name="DateText" Grid.Row="1" Grid.Column="1"
+                           Text="2026. 02" FontSize="24" FontWeight="ExtraBold"
+                           Foreground="#44474A" VerticalAlignment="Center" HorizontalAlignment="Center"/>
 
-				<TextBlock x:Name="SelectedDateText" Grid.Row="0" Text="일정을 선택하세요" FontWeight="Bold" Foreground="#555" Margin="5,0,0,15" FontSize="16"/>
+                <Button Grid.Row="1" Grid.Column="2" Content="Today"
+                        Style="{StaticResource NeumorphicButton}" Width="65" Height="35"
+                        Click="GoToToday_Click"/>
+            </Grid>
 
-				<ListBox x:Name="ScheduleListBox" Grid.Row="1" Background="Transparent" BorderThickness="0"
-                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True" ScrollViewer.VerticalScrollBarVisibility="Auto">
-					<ListBox.ItemTemplate>
-						<DataTemplate>
-							<Border Margin="5,8,5,8" Background="#F0F2F5" CornerRadius="15" Padding="15,12,10,12">
-								<Border.Effect>
-									<DropShadowEffect BlurRadius="10" Direction="315" ShadowDepth="3" Opacity="0.4" Color="#D1D9E6"/>
-								</Border.Effect>
-								<Grid>
-									<Grid.ColumnDefinitions>
-										<ColumnDefinition Width="Auto"/>
-										<ColumnDefinition Width="Auto"/>
-										<ColumnDefinition Width="*"/>
-										<ColumnDefinition Width="Auto"/>
-									</Grid.ColumnDefinitions>
+            <UniformGrid Grid.Row="1" Columns="7" Margin="0,0,0,15">
+                <TextBlock Text="일" HorizontalAlignment="Center" Foreground="#FF5555" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="월" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="화" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="수" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="목" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="금" HorizontalAlignment="Center" Foreground="#888" FontSize="12" FontWeight="Bold"/>
+                <TextBlock Text="토" HorizontalAlignment="Center" Foreground="#5555FF" FontSize="12" FontWeight="Bold"/>
+            </UniformGrid>
 
-									<Border Grid.Column="0" Width="4" CornerRadius="2" Background="{Binding Color}" Margin="0,2,10,2"/>
+            <Grid Grid.Row="2" Margin="0,10">
+                <UniformGrid x:Name="CalendarGrid" Columns="7" VerticalAlignment="Top"/>
+            </Grid>
 
-									<CheckBox Grid.Column="1" 
-											  Style="{StaticResource SimpleRoundCheckBox}"
-											  IsChecked="{Binding IsCompleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}" 
-											  VerticalAlignment="Center" 
-											  Margin="0,0,12,0"
-											  Click="Schedule_CheckChanged"/>
+            <Grid Grid.Row="3" Margin="0,20,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-									<TextBlock Grid.Column="2" Text="{Binding Content}" FontSize="14" VerticalAlignment="Center" TextWrapping="Wrap">
-										<TextBlock.Style>
-											<Style TargetType="TextBlock"> 
-												<Setter Property="Foreground" Value="#44474A"/>
-												<Style.Triggers>
-													<DataTrigger Binding="{Binding IsCompleted}" Value="True">
-														<Setter Property="TextDecorations" Value="Strikethrough"/>
-														<Setter Property="Opacity" Value="0.5"/>
-													</DataTrigger>
-												</Style.Triggers>
-											</Style>
-										</TextBlock.Style>
-									</TextBlock>
+                <TextBlock x:Name="SelectedDateText" Grid.Row="0" Text="일정을 선택하세요"
+                           FontWeight="Bold" Foreground="#555" Margin="5,0,0,15" FontSize="16"/>
 
-									<StackPanel Grid.Column="3" Orientation="Horizontal">
-										<Button Content="" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" BorderThickness="0" Width="28" Height="28" Tag="{Binding}" Click="EditSchedule_Click"/>
-										<Button Content="" FontFamily="Segoe MDL2 Assets" FontSize="12" Background="Transparent" BorderThickness="0" Width="28" Height="28" Tag="{Binding}" Click="DeleteSchedule_Click"/>
-									</StackPanel>
-								</Grid>
-							</Border>
-						</DataTemplate>
-					</ListBox.ItemTemplate>
-				</ListBox>
+                <ListBox x:Name="ScheduleListBox" Grid.Row="1" Background="Transparent" BorderThickness="0"
+                         dd:DragDrop.IsDragSource="True" dd:DragDrop.IsDropTarget="True"
+                         ScrollViewer.VerticalScrollBarVisibility="Auto">
+                    <ListBox.ItemTemplate>
+                        <DataTemplate>
+                            <Border Margin="5,8,5,8" Background="#F0F2F5" CornerRadius="15" Padding="15,12,10,12">
+                                <Border.Effect>
+                                    <DropShadowEffect BlurRadius="10" Direction="315" ShadowDepth="3" Opacity="0.4" Color="#D1D9E6"/>
+                                </Border.Effect>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="Auto"/>
+                                    </Grid.ColumnDefinitions>
 
-				<Grid Grid.Row="2" Margin="5,15,5,15">
-					<Grid.ColumnDefinitions>
-						<ColumnDefinition Width="Auto"/>
-						<ColumnDefinition Width="*"/>
-					</Grid.ColumnDefinitions>
-					<Button x:Name="LockBtn" Grid.Column="0" Content="" FontFamily="Segoe MDL2 Assets" Style="{StaticResource NeumorphicButton}" Width="32" Height="32" Click="ToggleLock_Click"/>
-					<StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-						<TextBlock Text="Opacity" Foreground="#A0A8B5" FontSize="11" Margin="0,0,12,0"/>
-						<Slider x:Name="OpacitySlider" Width="120" Minimum="0.3" Maximum="1.0" Value="1.0" Style="{StaticResource NeumorphicSlider}"/>
-					</StackPanel>
-					
-				</Grid>
+                                    <Border Grid.Column="0" Width="4" CornerRadius="2" Background="{Binding Color}" Margin="0,2,10,2"/>
 
-				<StackPanel Grid.Row="3">
-					<TextBlock x:Name="EditNoticeText" Text="수정 모드" FontSize="11" Foreground= "#5555FF" FontWeight="Bold" Margin="60,0,0,10" Visibility="Collapsed"  />
-					<Grid Height="50">
-						<Grid.ColumnDefinitions>
-							<ColumnDefinition Width="Auto"/>
-							<ColumnDefinition Width="*"/>
-							<ColumnDefinition Width="Auto"/>
-						</Grid.ColumnDefinitions>
-						<Button x:Name="ColorPickerButton" Grid.Column="0" Width="40" Height="40" Click="ColorPickerButton_Click" Style="{StaticResource NeumorphicButton}">
-							<Ellipse x:Name="CurrentColorIndicator" Width="15" Height="15" Fill="#FF00C6"/>
-						</Button>
-						<Popup x:Name="ColorPalettePopup" StaysOpen="False" PlacementTarget="{Binding ElementName=ColorPickerButton}" AllowsTransparency="True">
-							<Border Background="#F0F2F5" CornerRadius="15" Padding="10">
-								<UniformGrid x:Name="PaletteGrid" Columns="6"/>
-							</Border>
-						</Popup>
-						<Border Grid.Column="1" Margin="10,0" Background="#F0F2F5" CornerRadius="12" BorderThickness="1" BorderBrush="#E2E8F0">
-							<TextBox x:Name="ScheduleInput" Background="Transparent" BorderThickness="0" Padding="15,0" VerticalContentAlignment="Center"/>
-						</Border>
-						<Button Grid.Column="2" Content="+" Foreground="#5555ff" Width="50" Height="40" Style="{StaticResource NeumorphicButton}" FontSize="20" Click="AddSchedule_Click" Margin="0, 0, 0, 0"/>
-					</Grid>
-				</StackPanel>
-			</Grid>
-		</Grid>
-	</Border>
+                                    <CheckBox Grid.Column="1"
+                                              Style="{StaticResource SimpleRoundCheckBox}"
+                                              IsChecked="{Binding IsCompleted, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                              VerticalAlignment="Center"
+                                              Margin="0,0,12,0"
+                                              Click="Schedule_CheckChanged"/>
+
+                                    <TextBlock Grid.Column="2" Text="{Binding Content}" FontSize="14"
+                                               VerticalAlignment="Center" TextWrapping="Wrap">
+                                        <TextBlock.Style>
+                                            <Style TargetType="TextBlock">
+                                                <Setter Property="Foreground" Value="#44474A"/>
+                                                <Style.Triggers>
+                                                    <DataTrigger Binding="{Binding IsCompleted}" Value="True">
+                                                        <Setter Property="TextDecorations" Value="Strikethrough"/>
+                                                        <Setter Property="Opacity" Value="0.5"/>
+                                                    </DataTrigger>
+                                                </Style.Triggers>
+                                            </Style>
+                                        </TextBlock.Style>
+                                    </TextBlock>
+
+                                    <StackPanel Grid.Column="3" Orientation="Horizontal">
+                                        <Button Content="" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                Background="Transparent" BorderThickness="0" Width="28" Height="28"
+                                                Tag="{Binding}" Click="EditSchedule_Click"/>
+                                        <Button Content="" FontFamily="Segoe MDL2 Assets" FontSize="12"
+                                                Background="Transparent" BorderThickness="0" Width="28" Height="28"
+                                                Tag="{Binding}" Click="DeleteSchedule_Click"/>
+                                    </StackPanel>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </ListBox.ItemTemplate>
+                </ListBox>
+
+                <Grid Grid.Row="2" Margin="5,15,5,15">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="Auto"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Button x:Name="LockBtn" Grid.Column="0" Content="" FontFamily="Segoe MDL2 Assets"
+                            Style="{StaticResource NeumorphicButton}" Width="32" Height="32"
+                            Click="ToggleLock_Click"/>
+                    <StackPanel Grid.Column="1" Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <TextBlock Text="Opacity" Foreground="#A0A8B5" FontSize="11" Margin="0,0,12,0"/>
+                        <Slider x:Name="OpacitySlider" Width="120" Minimum="0.3" Maximum="1.0" Value="1.0"
+                                Style="{StaticResource NeumorphicSlider}"/>
+                    </StackPanel>
+                </Grid>
+
+                <StackPanel Grid.Row="3">
+                    <TextBlock x:Name="EditNoticeText" Text="수정 모드" FontSize="11" Foreground="#5555FF"
+                               FontWeight="Bold" Margin="60,0,0,10" Visibility="Collapsed"/>
+                    <Grid Height="50">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="Auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Button x:Name="ColorPickerButton" Grid.Column="0" Width="40" Height="40"
+                                Click="ColorPickerButton_Click" Style="{StaticResource NeumorphicButton}">
+                            <Ellipse x:Name="CurrentColorIndicator" Width="15" Height="15" Fill="#FF00C6"/>
+                        </Button>
+                        <Popup x:Name="ColorPalettePopup" StaysOpen="False"
+                               PlacementTarget="{Binding ElementName=ColorPickerButton}"
+                               AllowsTransparency="True">
+                            <Border Background="#F0F2F5" CornerRadius="15" Padding="10">
+                                <UniformGrid x:Name="PaletteGrid" Columns="6"/>
+                            </Border>
+                        </Popup>
+                        <Border Grid.Column="1" Margin="10,0" Background="#F0F2F5" CornerRadius="12"
+                                BorderThickness="1" BorderBrush="#E2E8F0">
+                            <TextBox x:Name="ScheduleInput" Background="Transparent" BorderThickness="0"
+                                     Padding="15,0" VerticalContentAlignment="Center"/>
+                        </Border>
+                        <Button Grid.Column="2" Content="+" Foreground="#5555ff" Width="50" Height="40"
+                                Style="{StaticResource NeumorphicButton}" FontSize="20"
+                                Click="AddSchedule_Click"/>
+                    </Grid>
+                </StackPanel>
+
+            </Grid>
+        </Grid>
+    </Border>
 </Window>

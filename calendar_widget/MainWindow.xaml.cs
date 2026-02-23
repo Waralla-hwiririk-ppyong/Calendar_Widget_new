@@ -291,8 +291,37 @@ namespace Calender_Widget
 			}
 			return false;
 		}
+        // 🔹 추가됨: 우측 상단 닫기 버튼 클릭 로직
+        private void CloseWindow_Click(object sender, RoutedEventArgs e)
+        {
+            // (트레이 데몬으로 유지)
+            this.Hide();
+        }
 
-		private void PrevMonth_Click(object sender, RoutedEventArgs e) { _displayDate = _displayDate.AddMonths(-1); UpdateCalendarDisplay(); }
+        // 🔹 데몬 실행을 위한 기존 추가 로직 (참고용)
+        private bool _isExiting = false;
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            if (!_isExiting)
+            {
+                e.Cancel = true;
+                this.Hide();
+            }
+            base.OnClosing(e);
+        }
+
+        protected override void OnClosed(EventArgs e)
+        {
+            if (_notifyIcon != null)
+            {
+                _notifyIcon.Visible = false;
+                _notifyIcon.Dispose();
+            }
+            base.OnClosed(e);
+        }
+
+        private void PrevMonth_Click(object sender, RoutedEventArgs e) { _displayDate = _displayDate.AddMonths(-1); UpdateCalendarDisplay(); }
 		private void NextMonth_Click(object sender, RoutedEventArgs e) { _displayDate = _displayDate.AddMonths(1); UpdateCalendarDisplay(); }
 		private void GoToToday_Click(object sender, RoutedEventArgs e) { _displayDate = DateTime.Now; _selectedDate = DateTime.Now; ShowSchedule(DateTime.Now); UpdateCalendarDisplay(); }
 		private void ColorPickerButton_Click(object sender, RoutedEventArgs e) => ColorPalettePopup.IsOpen = !ColorPalettePopup.IsOpen;
