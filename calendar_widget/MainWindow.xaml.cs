@@ -9,6 +9,7 @@ using System.Windows.Media;
 using System.Windows.Shapes;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media.Animation;
 using GongSolutions.Wpf.DragDrop;
 using Newtonsoft.Json;
 
@@ -23,6 +24,7 @@ namespace Calender_Widget
 		private string _currentSelectedColor = "#FF00C6";
 		private bool _isLocked = false;
 		private int _editingIndex = -1;
+		private bool _isScheduleOpen = false;
 		private readonly string _filePath = System.IO.Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "schedules.json");
 
 		// WinForms용 NotifyIcon은 전체 이름을 다 적어줍니다.
@@ -279,6 +281,31 @@ namespace Calender_Widget
 				};
 				PaletteGrid.Children.Add(btn);
 			}
+		}
+
+
+		private void ToggleSchedule_Click(object sender, RoutedEventArgs e)
+		{
+			if (_isScheduleOpen)
+			{
+				_isScheduleOpen = false;
+				var sb = (Storyboard)this.Resources["CollapseSchedule"];
+				sb.Completed += OnCollapseCompleted;
+				sb.Begin(this);
+			}
+			else
+			{
+				_isScheduleOpen = true;
+				SchedulePanel.Visibility = Visibility.Visible;
+				var sb = (Storyboard)this.Resources["ExpandSchedule"];
+				sb.Begin(this);
+			}
+		}
+
+		private void OnCollapseCompleted(object sender, EventArgs e)
+		{
+			SchedulePanel.Visibility = Visibility.Collapsed;
+			((Storyboard)this.Resources["CollapseSchedule"]).Completed -= OnCollapseCompleted;
 		}
 
 		private void ToggleSettings_Click(object sender, RoutedEventArgs e)
