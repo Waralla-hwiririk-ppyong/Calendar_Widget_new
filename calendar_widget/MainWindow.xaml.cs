@@ -28,27 +28,37 @@ namespace Calender_Widget
 		// WinForms용 NotifyIcon은 전체 이름을 다 적어줍니다.
 		private System.Windows.Forms.NotifyIcon _notifyIcon;
 
-		public MainWindow()
-		{
-			InitializeComponent();
-			this.DataContext = this;
-			InitializePalette();
-			LoadData();
-			SetupTrayIcon();
+        public MainWindow()
+        {
+            InitializeComponent();
+            this.DataContext = this;
+            InitializePalette();
+            LoadData();
+            SetupTrayIcon();
 
-			_selectedDateKey = DateTime.Now.ToString("yyyy-MM-dd");
-			UpdateCalendarDisplay();
-			ShowSchedule(DateTime.Now);
+            _selectedDateKey = DateTime.Now.ToString("yyyy-MM-dd");
+            UpdateCalendarDisplay();
+            ShowSchedule(DateTime.Now);
 
-			ScheduleInput.KeyDown += (s, e) => { if (e.Key == Key.Enter) AddSchedule_Click(s, e); };
+            ScheduleInput.KeyDown += (s, e) => { if (e.Key == Key.Enter) AddSchedule_Click(s, e); };
 
-			this.MouseDown += (s, e) => {
-				if (e.LeftButton == MouseButtonState.Pressed && !_isLocked && !IsDescendantOfListBox(e.OriginalSource as DependencyObject))
-					DragMove();
-			};
-		}
+            this.MouseDown += (s, e) => {
+                if (e.LeftButton == MouseButtonState.Pressed && !_isLocked && !IsDescendantOfListBox(e.OriginalSource as DependencyObject))
+                    DragMove();
+            };
 
-		private void SetupTrayIcon()
+            // B 방식: 스냅/최대화 방지
+            this.StateChanged += MainWindow_StateChanged;
+        }
+
+        private void MainWindow_StateChanged(object sender, EventArgs e)
+        {
+            if (WindowState == WindowState.Maximized)
+            {
+                WindowState = WindowState.Normal;
+            }
+        }
+        private void SetupTrayIcon()
 		{
 			_notifyIcon = new System.Windows.Forms.NotifyIcon();
 			try { _notifyIcon.Icon = new System.Drawing.Icon("icon_nb.ico"); }

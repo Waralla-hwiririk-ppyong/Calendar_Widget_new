@@ -6,7 +6,8 @@
         WindowStyle="None" AllowsTransparency="True" Background="Transparent"
         WindowStartupLocation="CenterScreen"
         ShowInTaskbar="False"
-        FontFamily="Segoe UI, Malgun Gothic">
+        FontFamily="Segoe UI, Malgun Gothic"
+        ResizeMode="NoResize">
 
     <Window.Resources>
         <Style x:Key="NeumorphicButton" TargetType="Button">
