@@ -271,6 +271,13 @@ namespace Calender_Widget
 			}
 		}
 
+		private void ToggleSettings_Click(object sender, RoutedEventArgs e)
+		{
+			SettingsPanel.Visibility = SettingsPanel.Visibility == Visibility.Visible
+				? Visibility.Collapsed
+				: Visibility.Visible;
+		}
+
 		private void ToggleLock_Click(object sender, RoutedEventArgs e)
 		{
 			_isLocked = !_isLocked;
